@@ -1,31 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Our Story – Organic Ellie</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" type="image/png" href="/assets/images/favicon.png">
-</head>
-<body class="bg-green-50 text-gray-800 font-sans">
-  <!-- Header -->
-  <header class="bg-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <a href="/" class="text-2xl font-bold text-green-700">Organic Ellie</a>
-      <nav class="space-x-6">
-        <a href="/" class="text-gray-600 hover:text-green-600">Home</a>
-        <a href="/blog" class="text-gray-600 hover:text-green-600">Blog</a>
-        <a href="https://organicellie.shop" class="text-gray-600 hover:text-green-600">Shop</a>
-        <a href="/about" class="text-gray-600 hover:text-green-600">About</a>
-      </nav>
-    </div>
-  </header>
+---
+layout: default
+title: Our Story
+permalink: /our-story/
+---
 
-  <!-- Story Content -->
-  <main class="py-16 px-4 max-w-4xl mx-auto">
-    <h1 class="text-4xl font-extrabold text-green-800 mb-6 text-center">🌱 Why I Started Organic Ellie</h1>
+<h1 class="text-4xl font-bold text-green-800 mb-6">Why I Started Organic Ellie</h1>
 
-    <p class="mb-6 text-lg leading-relaxed">
+<p class="text-lg text-gray-700 mb-4">It all started the moment I held my daughter, Eliana, in my arms.</p>
+
+<p class="mb-6 text-lg leading-relaxed">
       Becoming a mother changed everything for me.
     </p>
     <p class="mb-6 text-lg leading-relaxed">
@@ -53,18 +36,4 @@
     </p>
 
     <p class="text-lg font-semibold">With love,<br>Priscilla<br><span class="italic">Founder of Organic Ellie 🌿</span></p>
-  </main>
 
-  <!-- Footer -->
-  <footer class="bg-green-700 text-white py-8 mt-12">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-      <p class="text-sm">© 2025 Organic Ellie. All rights reserved.</p>
-      <div class="mt-4 space-x-4">
-        <a href="https://instagram.com/organicellie" class="hover:underline">Instagram</a>
-        <a href="/about" class="hover:underline">About</a>
-        <a href="mailto:hello@organicellie.com" class="hover:underline">Contact</a>
-      </div>
-    </div>
-  </footer>
-</body>
-</html>
