@@ -3,15 +3,6 @@ layout: default
 title: Blog
 ---
 
-<!-- Highlight styling for <mark> -->
-<style>
-  mark {
-    background-color: #FEF3C7; /* Tailwind yellow-100 */
-    padding: 0.1em 0.2em;
-    border-radius: 0.2em;
-  }
-</style>
-
 <h1 class="text-4xl font-extrabold text-green-800 mb-10 text-center">From the Blog</h1>
 
 <!-- Search Input -->
@@ -26,7 +17,8 @@ title: Blog
 
 <!-- Search Results (hidden by default) -->
 <ul id="search-results" class="hidden space-y-6 px-4 max-w-3xl mx-auto"></ul>
-<!-- Pagination Controls -->
+
+<!-- Pagination Controls (hidden by default) -->
 <div id="pagination-controls" class="hidden flex justify-center mt-4 space-x-2 px-4 max-w-3xl mx-auto"></div>
 
 <!-- All Posts (shown by default) -->
@@ -42,47 +34,48 @@ title: Blog
   {% endfor %}
 </div>
 
-<!-- Fuse.js for fuzzy search and mark.js for highlighting -->
-<script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
+<!-- Mark.js for highlighting matches -->
 <script src="https://cdn.jsdelivr.net/npm/mark.js/dist/mark.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const searchInput = document.getElementById('search-input');
-  const resultsContainer = document.getElementById('search-results');
-  const allPostsContainer = document.getElementById('all-posts');
-  const paginationContainer = document.getElementById('pagination-controls');
+  const searchInput        = document.getElementById('search-input');
+  const resultsContainer   = document.getElementById('search-results');
+  const allPostsContainer  = document.getElementById('all-posts');
+  const paginationContainer= document.getElementById('pagination-controls');
 
   const pageSize = 5;
   let currentPage = 0;
-  let fuse, results = [];
+  let index = [];   // will hold our search.json data
+  let results = [];
 
-  // Fetch index and initialize Fuse
+  // 1) Load the JSON index once
   fetch('{{ "/search.json" | relative_url }}')
     .then(res => res.json())
-    .then(docs => {
-      fuse = new Fuse(docs, {
-        keys: ['title', 'content'],
-        threshold: 0.4
-      });
-    });
+    .then(data => index = data);
 
+  // 2) On every keystroke, filter by substring
   searchInput.addEventListener('input', () => {
-    const query = searchInput.value.trim();
-    if (!query) {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) {
+      // no query: show full list
       allPostsContainer.classList.remove('hidden');
       resultsContainer.classList.add('hidden');
       paginationContainer.classList.add('hidden');
       return;
     }
-    // Perform search
-    results = fuse.search(query).map(r => r.item);
+    // filter title OR content
+    results = index.filter(item =>
+      item.title.toLowerCase().includes(q) ||
+      item.content.toLowerCase().includes(q)
+    );
     currentPage = 0;
     allPostsContainer.classList.add('hidden');
     paginationContainer.classList.remove('hidden');
-    renderPage(query);
+    renderPage(q);
   });
 
+  // 3) Render a given page of results, highlight matches
   function renderPage(query) {
     resultsContainer.innerHTML = '';
     const start = currentPage * pageSize;
@@ -102,30 +95,35 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         resultsContainer.appendChild(li);
       });
-      // Highlight search terms
-      new Mark(resultsContainer).mark(searchInput.value.trim());
+      // highlight all occurrences of the query
+      new Mark(resultsContainer).mark(query, {
+        separateWordSearch: false
+      });
     }
 
-    // Build pagination controls
+    // 4) Build pagination buttons
     paginationContainer.innerHTML = '';
     const totalPages = Math.ceil(results.length / pageSize);
 
     if (currentPage > 0) {
-      const prev = document.createElement('button');
-      prev.textContent = 'Previous';
-      prev.className = 'px-4 py-2 bg-gray-200 rounded hover:bg-gray-300';
-      prev.addEventListener('click', () => { currentPage--; renderPage(query); });
-      paginationContainer.appendChild(prev);
+      const prevBtn = document.createElement('button');
+      prevBtn.textContent = 'Previous';
+      prevBtn.className = 'px-4 py-2 bg-gray-200 rounded hover:bg-gray-300';
+      prevBtn.onclick = () => { currentPage--; renderPage(query); };
+      paginationContainer.appendChild(prevBtn);
     }
     if (currentPage < totalPages - 1) {
-      const next = document.createElement('button');
-      next.textContent = 'Next';
-      next.className = 'px-4 py-2 bg-gray-200 rounded hover:bg-gray-300';
-      next.addEventListener('click', () => { currentPage++; renderPage(query); });
-      paginationContainer.appendChild(next);
+      const nextBtn = document.createElement('button');
+      nextBtn.textContent = 'Next';
+      nextBtn.className = 'px-4 py-2 bg-gray-200 rounded hover:bg-gray-300';
+      nextBtn.onclick = () => { currentPage++; renderPage(query); };
+      paginationContainer.appendChild(nextBtn);
     }
+
+    resultsContainer.classList.remove('hidden');
   }
 
+  // utility to escape HTML
   function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
