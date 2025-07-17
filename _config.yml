@@ -1,8 +1,10 @@
-title: Organic Ellie
-description: Clean, conscious living for modern mamas.
-baseurl: "" 
-url: "https://organicellie.com"
-markdown: kramdown
-theme: minima
+# _config.yml
+
+title:       Organic Ellie
+description: "Clean, conscious living for modern mamas."
+baseurl:     "" 
+url:         "https://organicellie.com"
+
+markdown:    kramdown
 plugins:
   - jekyll-feed
