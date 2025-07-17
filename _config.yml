@@ -1,0 +1,8 @@
+title: Organic Ellie
+description: Clean, conscious living for modern mamas.
+baseurl: "" 
+url: "https://organicellie.com"
+markdown: kramdown
+theme: minima
+plugins:
+  - jekyll-feed

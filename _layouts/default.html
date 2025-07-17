@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ page.title }} – Organic Ellie</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="/assets/images/favicon.png">
+</head>
+<body class="bg-white text-gray-800 font-sans">
+  {% include header.html %}
+  <main class="max-w-3xl mx-auto px-4 py-16">
+    {{ content }}
+  </main>
+  {% include footer.html %}
+</body>
+</html>
