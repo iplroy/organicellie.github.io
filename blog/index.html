@@ -4,7 +4,22 @@ title: Blog
 ---
 
 <h1 class="text-4xl font-extrabold text-green-800 mb-10 text-center">From the Blog</h1>
-<div class="space-y-12">
+
+<!-- Search Input -->
+<div class="mb-8 px-4 max-w-3xl mx-auto">
+  <input
+    type="text"
+    id="search-input"
+    placeholder="Search the blog…"
+    class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring focus:border-green-500"
+  />
+</div>
+
+<!-- Search Results -->
+<ul id="search-results" class="space-y-6 px-4 max-w-3xl mx-auto hidden"></ul>
+
+<!-- All Posts (hidden when searching) -->
+<div id="all-posts" class="space-y-12 px-4 max-w-3xl mx-auto">
   {% for post in site.posts %}
     <article>
       <h2 class="text-2xl font-bold mb-2 text-green-700">
@@ -15,3 +30,33 @@ title: Blog
     </article>
   {% endfor %}
 </div>
+
+<!-- Simple Jekyll Search -->
+<script src="https://unpkg.com/simple-jekyll-search@latest/dist/simple-jekyll-search.min.js"></script>
+<script>
+  const searchInput = document.getElementById('search-input');
+  const results     = document.getElementById('search-results');
+  const allPosts    = document.getElementById('all-posts');
+
+  SimpleJekyllSearch({
+    searchInput: searchInput,
+    resultsContainer: results,
+    json: '{{ "/search.json" | relative_url }}',
+    searchResultTemplate: '<li><a class="text-green-700 hover:underline" href="{url}">{title}</a><p class="text-sm text-gray-600 mt-1">{content}...</p></li>',
+    noResultsText: 'No posts found—try another term.',
+    limit: 10,
+    fuzzy: false,
+    debounceTime: 300,
+  });
+
+  // Toggle visibility
+  searchInput.addEventListener('input', () => {
+    if (searchInput.value.trim()) {
+      allPosts.style.display = 'none';
+      results.classList.remove('hidden');
+    } else {
+      allPosts.style.display = 'block';
+      results.classList.add('hidden');
+    }
+  });
+</script>
