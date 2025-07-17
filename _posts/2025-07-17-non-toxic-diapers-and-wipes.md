@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Diaper Duty Done Right: A Holistic Guide to Non‑Toxic Diapers & Wipes"
+title: "Non‑Toxic Diapers & Wipes for Your Little One"
 date: 2025-07-17
 description: "A comprehensive, eco‑conscious guide to choosing and using non‑toxic diapers and wipes for your little one."
 ---
