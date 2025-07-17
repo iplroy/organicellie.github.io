@@ -5,8 +5,6 @@ date: 2025-06-04
 description: "Curated with love and backed by hours of research — these baby essentials are safe, clean, and truly mama-approved."
 ---
 
-# Top 10 Non-Toxic Baby Essentials
-
 Curated with love and backed by hours of research — these baby essentials are safe, clean, and truly mama-approved.
 
 1. **Organic Cotton Onesies**  
