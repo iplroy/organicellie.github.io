@@ -15,10 +15,10 @@ title: Blog
   />
 </div>
 
-<!-- Search Results -->
-<ul id="search-results" class="space-y-6 px-4 max-w-3xl mx-auto hidden"></ul>
+<!-- Search Results (hidden by default) -->
+<ul id="search-results" class="hidden space-y-6 px-4 max-w-3xl mx-auto"></ul>
 
-<!-- All Posts (hidden when searching) -->
+<!-- All Posts (shown by default) -->
 <div id="all-posts" class="space-y-12 px-4 max-w-3xl mx-auto">
   {% for post in site.posts %}
     <article>
@@ -42,20 +42,24 @@ title: Blog
     searchInput: searchInput,
     resultsContainer: results,
     json: '{{ "/search.json" | relative_url }}',
-    searchResultTemplate: '<li><a class="text-green-700 hover:underline" href="{url}">{title}</a><p class="text-sm text-gray-600 mt-1">{content}...</p></li>',
-    noResultsText: 'No posts found—try another term.',
+    searchResultTemplate: `
+      <li>
+        <h2 class="text-2xl font-bold text-green-700"><a href="{url}" class="hover:underline">{title}</a></h2>
+        <p class="text-gray-700 mt-1">{content}...</p>
+      </li>`,
+    noResultsText: '<li class="text-gray-700">No posts found—try another term.</li>',
     limit: 10,
     fuzzy: false,
     debounceTime: 300,
   });
 
-  // Toggle visibility
+  // Toggle which container is visible
   searchInput.addEventListener('input', () => {
-    if (searchInput.value.trim()) {
-      allPosts.style.display = 'none';
+    if (searchInput.value.trim().length > 0) {
+      allPosts.classList.add('hidden');
       results.classList.remove('hidden');
     } else {
-      allPosts.style.display = 'block';
+      allPosts.classList.remove('hidden');
       results.classList.add('hidden');
     }
   });
