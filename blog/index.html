@@ -17,6 +17,8 @@ title: Blog
 
 <!-- Search Results (hidden by default) -->
 <ul id="search-results" class="hidden space-y-6 px-4 max-w-3xl mx-auto"></ul>
+<!-- Pagination Controls -->
+<div id="pagination-controls" class="hidden flex justify-center mt-4 space-x-2 px-4 max-w-3xl mx-auto"></div>
 
 <!-- All Posts (shown by default) -->
 <div id="all-posts" class="space-y-12 px-4 max-w-3xl mx-auto">
@@ -31,41 +33,94 @@ title: Blog
   {% endfor %}
 </div>
 
-<!-- Simple Jekyll Search & Toggle Logic -->
-<script src="{{ '/assets/js/simple-jekyll-search.min.js' | relative_url }}"></script>
+<!-- Fuse.js for fuzzy search and mark.js for highlighting -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mark.js/dist/mark.min.js"></script>
+
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('search-input');
-    const results     = document.getElementById('search-results');
-    const allPosts    = document.getElementById('all-posts');
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('search-input');
+  const resultsContainer = document.getElementById('search-results');
+  const allPostsContainer = document.getElementById('all-posts');
+  const paginationContainer = document.getElementById('pagination-controls');
 
-    // Initialize the search
-    SimpleJekyllSearch({
-      searchInput: searchInput,
-      resultsContainer: results,
-      json: '{{ "/search.json" | relative_url }}',
-      searchResultTemplate: `
-        <li>
-          <h2 class="text-2xl font-bold text-green-700">
-            <a href="{url}" class="hover:underline">{title}</a>
-          </h2>
-          <p class="text-gray-700 mt-1">{content}...</p>
-        </li>`,
-      noResultsText: '<li class="text-gray-700">No posts found—try another term.</li>',
-      limit: 10,
-      fuzzy: false,
-      debounceTime: 300,
+  const pageSize = 5;
+  let currentPage = 0;
+  let fuse, results = [];
+
+  // Fetch index and initialize Fuse
+  fetch('{{ "/search.json" | relative_url }}')
+    .then(res => res.json())
+    .then(docs => {
+      fuse = new Fuse(docs, {
+        keys: ['title', 'content'],
+        threshold: 0.4
+      });
     });
 
-    // Toggle which container is visible
-    searchInput.addEventListener('input', () => {
-      if (searchInput.value.trim().length) {
-        allPosts.classList.add('hidden');
-        results.classList.remove('hidden');
-      } else {
-        allPosts.classList.remove('hidden');
-        results.classList.add('hidden');
-      }
-    });
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim();
+    if (!query) {
+      allPostsContainer.classList.remove('hidden');
+      resultsContainer.classList.add('hidden');
+      paginationContainer.classList.add('hidden');
+      return;
+    }
+    // Perform search
+    results = fuse.search(query).map(r => r.item);
+    currentPage = 0;
+    allPostsContainer.classList.add('hidden');
+    paginationContainer.classList.remove('hidden');
+    renderPage(query);
   });
+
+  function renderPage(query) {
+    resultsContainer.innerHTML = '';
+    const start = currentPage * pageSize;
+    const pageItems = results.slice(start, start + pageSize);
+
+    if (pageItems.length === 0) {
+      resultsContainer.innerHTML = '<li class="text-gray-700">No posts found—try another term.</li>';
+    } else {
+      pageItems.forEach(post => {
+        const li = document.createElement('li');
+        li.className = 'mb-6';
+        li.innerHTML = `
+          <h2 class="text-2xl font-bold text-green-700 mb-1">
+            <a href="${post.url}" class="hover:underline">${post.title}</a>
+          </h2>
+          <p class="text-gray-700 mb-2">${escapeHtml(post.content.slice(0,200))}...</p>
+        `;
+        resultsContainer.appendChild(li);
+      });
+      // Highlight search terms
+      new Mark(resultsContainer).mark(query);
+    }
+
+    // Build pagination controls
+    paginationContainer.innerHTML = '';
+    const totalPages = Math.ceil(results.length / pageSize);
+
+    if (currentPage > 0) {
+      const prev = document.createElement('button');
+      prev.textContent = 'Previous';
+      prev.className = 'px-4 py-2 bg-gray-200 rounded hover:bg-gray-300';
+      prev.addEventListener('click', () => { currentPage--; renderPage(query); });
+      paginationContainer.appendChild(prev);
+    }
+    if (currentPage < totalPages - 1) {
+      const next = document.createElement('button');
+      next.textContent = 'Next';
+      next.className = 'px-4 py-2 bg-gray-200 rounded hover:bg-gray-300';
+      next.addEventListener('click', () => { currentPage++; renderPage(query); });
+      paginationContainer.appendChild(next);
+    }
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+});
 </script>
